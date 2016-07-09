@@ -1,7 +1,6 @@
 
-(require '[clojure.java.io :as io])
 (import '[java.net Socket]
-        '[java.io BufferedReader InputStreamReader PrintWriter])
+        '[java.io BufferedReader InputStreamReader])
 
 (def host "time-a.nist.gov")
 (def port 13)
@@ -15,6 +14,5 @@
     (when-let [n (.readLine in)]
       (println n)
       (recur)))
+  (.close in)
   (.close socket))
-
-
