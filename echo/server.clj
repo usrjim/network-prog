@@ -1,11 +1,11 @@
 
-(import '[java.net ServerSocket]
-        '[java.io InputStreamReader PrintWriter BufferedReader])
+(import '[java.net ServerSocket Socket]
+        '[java.io BufferedReader InputStreamReader PrintWriter])
 
 (def port 4444)
 (def server (ServerSocket. port))
 
-(println "server listening on port" port)
+(println "listening for connection on port " port)
 
 (while true
   (let [client (.accept server)
@@ -16,12 +16,19 @@
         out (-> client
                 .getOutputStream
                 PrintWriter.)]
-    (println "accepted from client" (.getHostName (.getInetAddress client)))
-    (loop []
-      (when-let [n (.readLine in)]
-        (println "received" n)
-        (binding [*out* out]
-          (println "sent" n))
-        (recur)))
-    (.close client)))
+    (println "received connection from"
+             (str (.getRemoteSocketAddress client)))
 
+    (.println out "My echo server 1.0")
+    (.flush out)
+
+    (loop []
+      (when-let [line (.readLine in)]
+        (.println out (str "Got:" line))
+        (.flush out)
+        (recur)))
+    
+    (.close in)
+    (.close out)
+    (.close client)
+    (println "connection closed")))
